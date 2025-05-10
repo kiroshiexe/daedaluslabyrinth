@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>About Us – Psychological Horror</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      background-color: black;
+      overflow: hidden;
+      font-family: 'Goudy Old Style', serif;
+    }
+
+    #scene {
+      position: fixed;
+      top: 0;
+      left: -2%; /* Deslocado para a esquerda */
+      width: 100vw; /* Manter a largura original */
+      height: 100vh;
+      background-image: url('meugif.gif');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 1;
+    }
+
+    #darkLayer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      z-index: 2;
+      opacity: 1;
+      transition: opacity 2s ease-in-out;
+    }
+
+    .message {
+      position: fixed;
+      font-size: 2.2em;
+      font-weight: bold;
+      color: #999999;
+      z-index: 3;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      text-shadow: 2px 2px 8px #330000;
+    }
+
+    .glitch {
+      position: relative;
+      animation: glitch-skew 0.3s infinite linear alternate-reverse; /* Acelerado */
+    }
+
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      overflow: hidden;
+      background: transparent;
+      clip: rect(0, 900px, 0, 0);
+    }
+
+    .glitch::before {
+      left: 2px;
+      text-shadow: -2px 0 red;
+      animation: glitch-anim 0.8s infinite linear alternate-reverse; /* Acelerado */
+    }
+
+    .glitch::after {
+      left: -2px;
+      text-shadow: -2px 0 blue;
+      animation: glitch-anim2 0.6s infinite linear alternate-reverse; /* Acelerado */
+    }
+
+    @keyframes glitch-anim {
+      0% { clip: rect(0, 9999px, 0, 0); }
+      5% { clip: rect(10px, 9999px, 40px, 0); }
+      10% { clip: rect(85px, 9999px, 140px, 0); }
+      15% { clip: rect(10px, 9999px, 50px, 0); }
+      20% { clip: rect(0, 9999px, 0, 0); }
+      100% { clip: rect(0, 9999px, 0, 0); }
+    }
+
+    @keyframes glitch-anim2 {
+      0% { clip: rect(0, 9999px, 0, 0); }
+      5% { clip: rect(60px, 9999px, 100px, 0); }
+      10% { clip: rect(20px, 9999px, 80px, 0); }
+      15% { clip: rect(70px, 9999px, 120px, 0); }
+      20% { clip: rect(0, 9999px, 0, 0); }
+      100% { clip: rect(0, 9999px, 0, 0); }
+    }
+
+    @keyframes glitch-skew {
+      0% { transform: skew(0deg); }
+      10% { transform: skew(2deg); }
+      20% { transform: skew(-2deg); }
+      30% { transform: skew(1deg); }
+      40% { transform: skew(-1deg); }
+      50% { transform: skew(0deg); }
+      100% { transform: skew(0deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="scene"></div>
+  <div id="darkLayer"></div>
+
+  <script>
+    setTimeout(() => {
+      document.getElementById('darkLayer').style.opacity = '0';
+    }, 1000);
+
+    document.addEventListener('mousemove', (e) => {
+      const scene = document.getElementById('scene');
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
+      scene.style.transform = `translate(${mouseX / 50}px, ${mouseY / 50}px)`;
+    });
+
+    const words = ["Don't", 'get', 'too', 'close'];
+    const messageContainer = document.createElement('div');
+    messageContainer.id = 'messageContainer';
+    document.body.appendChild(messageContainer);
+
+    let wordIndex = 0;
+
+    function showWord() {
+      if (wordIndex < words.length) {
+        const word = document.createElement('div');
+        word.classList.add('message', 'glitch');
+        word.setAttribute('data-text', words[wordIndex]);
+        word.innerText = words[wordIndex];
+
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const rangeX = window.innerWidth * 0.3;
+        const rangeY = window.innerHeight * 0.3;
+
+        const randomX = centerX + (Math.random() * rangeX * 2 - rangeX);
+        const randomY = centerY + (Math.random() * rangeY * 2 - rangeY);
+
+        word.style.left = `${randomX}px`;
+        word.style.top = `${randomY}px`;
+        word.style.opacity = '1';
+
+        messageContainer.appendChild(word);
+
+        setTimeout(() => {
+          word.style.opacity = '0';
+          setTimeout(() => {
+            word.remove();
+            wordIndex++;
+            if (wordIndex === words.length) wordIndex = 0;
+            setTimeout(showWord, 300);
+          }, 1000);
+        }, 5000);
+      }
+    }
+
+    setTimeout(showWord, 10000);
+  </script>
+
+</body>
+</html>
